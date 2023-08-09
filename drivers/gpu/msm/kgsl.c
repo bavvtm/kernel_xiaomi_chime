@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2008-2021, The Linux Foundation. All rights reserved.
  * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (C) 2020 XiaoMi, Inc.
  */
 
 #include <uapi/linux/sched/types.h>
@@ -2992,6 +2993,11 @@ long kgsl_ioctl_gpuobj_import(struct kgsl_device_private *dev_priv,
 	return 0;
 
 unmap:
+	if (kgsl_memdesc_usermem_type(&entry->memdesc) == KGSL_MEM_ENTRY_ION) {
+		kgsl_destroy_ion(entry->priv_data);
+		entry->memdesc.sgt = NULL;
+	}
+
 	kgsl_sharedmem_free(&entry->memdesc);
 
 out:
@@ -3302,6 +3308,14 @@ long kgsl_ioctl_map_user_mem(struct kgsl_device_private *dev_priv,
 	return result;
 
 error_attach:
+	switch (kgsl_memdesc_usermem_type(&entry->memdesc)) {
+	case KGSL_MEM_ENTRY_ION:
+		kgsl_destroy_ion(entry->priv_data);
+		entry->memdesc.sgt = NULL;
+		break;
+	default:
+		break;
+	}
 	kgsl_sharedmem_free(&entry->memdesc);
 error:
 	/* Clear gpuaddr here so userspace doesn't get any wrong ideas */
