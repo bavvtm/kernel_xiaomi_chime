@@ -135,3 +135,11 @@ all.config
 
 # fetched Android config fragments
 kernel/configs/android-*.cfg
+
+# Out directory (make O=out)
+/out/
+
+# Additional files
+/zip/
+build.sh
+build-*.sh
