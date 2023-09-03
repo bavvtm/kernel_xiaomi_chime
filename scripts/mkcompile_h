@@ -51,10 +51,11 @@ else
 fi
 
 UTS_VERSION="#$VERSION"
+F2FS_HASH=$(sha1sum $PWD/fs/f2fs/[[:lower:]]* | awk '{print $1}' | sha1sum | awk '{print $1}' | cut -c1-10)
 CONFIG_FLAGS=""
 if [ -n "$SMP" ] ; then CONFIG_FLAGS="SMP"; fi
 if [ -n "$PREEMPT" ] ; then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT"; fi
-UTS_VERSION="$UTS_VERSION $CONFIG_FLAGS $TIMESTAMP"
+UTS_VERSION="$UTS_VERSION $CONFIG_FLAGS $TIMESTAMP "f2fs-hash:"$F2FS_HASH"
 
 # Truncate to maximum length
 
